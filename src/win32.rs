@@ -1,6 +1,10 @@
 #![allow(dead_code)]
 
-use std::{mem, ptr, os::raw::{c_char, c_void}};
+use std::{
+    mem,
+    os::raw::{c_char, c_void},
+    ptr,
+};
 use winapi::{
     shared::{minwindef::*, windef::*},
     um::{libloaderapi::*, wingdi::*, winnt::*, winuser::*},
@@ -47,7 +51,9 @@ static PIXEL_FORMAT: PIXELFORMATDESCRIPTOR = PIXELFORMATDESCRIPTOR {
 };
 
 static mut WINDOW_CLASS: Option<ATOM> = None;
-static WINDOW_CLASS_NAME: &[u16] = &[b'M' as _, b'i' as _, b'n' as _, b'i' as _, b'G' as _, b'L' as _, 0];
+static WINDOW_CLASS_NAME: &[u16] = &[
+    b'M' as _, b'i' as _, b'n' as _, b'i' as _, b'G' as _, b'L' as _, 0,
+];
 const WINDOW_STYLE: DWORD = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
 
 /// Registers the window class, if not already registered.
@@ -91,18 +97,18 @@ unsafe fn create_window(title: &str, mut width: u32, mut height: u32, class: ATO
     height = height.min(i32::max_value() as u32);
 
     let window: HWND = CreateWindowExW(
-        WS_EX_LEFT,                           // dwExStyle: DWORD
-        class as _,                           // lpClassName: LPCWSTR
-        window_name.as_ptr(),                 // lpWindowName: LPCWSTR
-        WINDOW_STYLE,                         // dwStyle: DWORD
-        CW_USEDEFAULT,                        // x: c_int
-        CW_USEDEFAULT,                        // y: c_int
-        width as _,                           // nWidth: c_int (CW_USEDEFAULT is -2147483648)
-        height as _,                          // nHeight: c_int (read above)
-        ptr::null_mut(),                      // hWndParent: HWND
-        ptr::null_mut(),                      // hMenu: HMENU
-        &__ImageBase as *const _ as *mut _,   // hInstance: HINSTANCE
-        ptr::null_mut(),                      // lpParam: LPVOID
+        WS_EX_LEFT,                         // dwExStyle: DWORD
+        class as _,                         // lpClassName: LPCWSTR
+        window_name.as_ptr(),               // lpWindowName: LPCWSTR
+        WINDOW_STYLE,                       // dwStyle: DWORD
+        CW_USEDEFAULT,                      // x: c_int
+        CW_USEDEFAULT,                      // y: c_int
+        width as _,                         // nWidth: c_int (CW_USEDEFAULT is -2147483648)
+        height as _,                        // nHeight: c_int (read above)
+        ptr::null_mut(),                    // hWndParent: HWND
+        ptr::null_mut(),                    // hMenu: HMENU
+        &__ImageBase as *const _ as *mut _, // hInstance: HINSTANCE
+        ptr::null_mut(),                    // lpParam: LPVOID
     );
 
     assert!(!window.is_null()); // TODO
@@ -126,7 +132,9 @@ unsafe extern "system" fn wnd_proc(
             assert!(!opengl_ctx.is_null()); // TODO
             let res = wglMakeCurrent(device_ctx, opengl_ctx);
             assert_eq!(res, TRUE); // TODO
-            let version = mem::transmute::<_, extern "C" fn(u32) -> *const c_char>(load_function(b"glGetString\0".as_ptr() as *const c_char))(0x1F02);
+            let version = mem::transmute::<_, extern "C" fn(u32) -> *const c_char>(load_function(
+                b"glGetString\0".as_ptr() as *const c_char,
+            ))(0x1F02);
             let s = std::ffi::CStr::from_ptr(version as *mut _);
             println!("OpenGL Version String: {}", s.to_string_lossy());
             let asdf = load_function(b"wglCreateContextAttribsARB\0".as_ptr() as *const c_char);
@@ -157,7 +165,7 @@ unsafe fn load_function(name: *const c_char) -> Option<ptr::NonNull<c_void>> {
             }
         }
 
-        _ => Some(ptr::NonNull::new_unchecked(addr as *mut _))
+        _ => Some(ptr::NonNull::new_unchecked(addr as *mut _)),
     }
 }
 
