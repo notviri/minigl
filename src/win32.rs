@@ -57,7 +57,7 @@ const WINDOW_STYLE: DWORD = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
 /// Registers the window class, if not already registered.
 #[rustfmt::skip]
 unsafe fn register_window_class() {
-    if let None = WINDOW_CLASS {
+    if WINDOW_CLASS.is_none() {
         let wnd_class = WNDCLASSEXW {
             cbSize: mem::size_of::<WNDCLASSEXW>() as _,         // winapi garbage (struct size)
             style: CS_OWNDC,                                    // per-window device contexts
@@ -140,6 +140,8 @@ unsafe extern "system" fn wnd_proc(
             wglDeleteContext(opengl_ctx);
             PostQuitMessage(0);
         }
+
+        // TODO: Different events, obviously!
         _ => (),
     }
     DefWindowProcW(hwnd, msg, wparam, lparam) // "Process everything else"
