@@ -5,7 +5,6 @@ use winapi::{
     shared::{minwindef::*, windef::*},
     um::{libloaderapi::*, wingdi::*, winnt::*, winuser::*},
 };
-use wstr::{wstrz, wstrz_impl};
 
 // TODO: This might not work on MinGW GCC? It seems to be a "microsoft linker" thing.
 extern "C" {
@@ -48,7 +47,7 @@ static PIXEL_FORMAT: PIXELFORMATDESCRIPTOR = PIXELFORMATDESCRIPTOR {
 };
 
 static mut WINDOW_CLASS: Option<ATOM> = None;
-static WINDOW_CLASS_NAME: &[u16] = wstrz!("MiniGL");
+static WINDOW_CLASS_NAME: &[u16] = &[b'M' as _, b'i' as _, b'n' as _, b'i' as _, b'G' as _, b'L' as _, 0];
 const WINDOW_STYLE: DWORD = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
 
 /// Registers the window class, if not already registered.
