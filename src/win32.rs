@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use std::{
     mem,
     os::raw::{c_char, c_void},
